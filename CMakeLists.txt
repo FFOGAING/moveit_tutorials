@@ -44,7 +44,7 @@ catkin_package(
 ## Build ##
 ###########
 
-include_directories(${THIS_PACKAGE_INCLUDE_DIRS})
+include_directories(${THIS_PACKAGE_INCLUDE_DIRS} doc/pick_place/include)
 include_directories(SYSTEM ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS})
 
 add_subdirectory(doc/controller_configuration)
