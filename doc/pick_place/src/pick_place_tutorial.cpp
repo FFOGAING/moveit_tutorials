@@ -21,17 +21,19 @@ int main(int argc, char** argv)
   /*******************************************************************************************/
     
   /********************************INSERT YOUR CODE HERE *************************************/
-    uint8_t num_object = 3;
-    moveit_wrapper.add_object(num_object);
+    int num_object = 1;
+    std::string typ_object = "SPHERE";
+    std::string object_id = "object";
+    moveit_wrapper.add_object(typ_object, num_object,object_id);
     moveit_wrapper.pick_object();
     moveit_wrapper.place_object();
 
   /*******************************************************************************************/
-
+  // ARRAY TO GIVE THE ACTUAL POSE AND PLACE POSE , TRY TO GIVE DEFAULT VALUE
   
 
   
-  ros::waitForShutdown();
+  //ros::waitForShutdown();
   return 0;
 }
 

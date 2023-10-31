@@ -44,9 +44,10 @@
 // TF2
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include <string>
 // The circle constant tau = 2*pi. One tau is one rotation in radians.
 const double tau = 2 * M_PI;
-
+enum Type_object {BOX = 1, SPHERE = 2, CYLINDER = 3 , CONE = 4};
 class MoveitWrapper
 {
 public:
@@ -57,16 +58,20 @@ public:
     void closed_gripper();
     void pick_object();
     void place_object();
-    void add_object(uint8_t &num_object);
-    
+    void add_object(int num_object);
+    void add_object(std::string object_type, int num_object=1,std::string object="object");
+    //void add_object(std::string object_type);
+
 private:
     
     void openGripper(trajectory_msgs::JointTrajectory& posture);
     void closedGripper(trajectory_msgs::JointTrajectory& posture);
     void pick();
     void place();
-    void addCollisionObjects(uint8_t &num_object);
+    void addCollisionObjects(std::string object_type, int num_object=1, std::string object_id = "object");
     
     moveit::planning_interface::PlanningSceneInterface* planning_scene_interface_;
     moveit::planning_interface::MoveGroupInterface* group_;
+    Type_object object_type_ ;
+    std::string object_id_;
 };

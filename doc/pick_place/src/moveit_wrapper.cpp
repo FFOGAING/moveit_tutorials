@@ -5,6 +5,7 @@ MoveitWrapper::MoveitWrapper(moveit::planning_interface::PlanningSceneInterface*
 {
     planning_scene_interface_ = planning_scene_interface;
     group_ = group;
+    object_id_ = "";
 }
 MoveitWrapper::~MoveitWrapper(void)
 {
@@ -30,9 +31,20 @@ void MoveitWrapper::place_object()
     place();
 }
 
-void MoveitWrapper::add_object(uint8_t &num_object)
+void MoveitWrapper::add_object(std::string object_type, int num_object, std::string object_id)
 {
-    addCollisionObjects(num_object);
+    addCollisionObjects(object_type, num_object, object_id);
+}
+
+// void MoveitWrapper::add_object(std::string object_type)
+// {
+//     addCollisionObjects(object_type);
+// }
+
+void MoveitWrapper::add_object(int num_object)
+{   
+    std::string std_object_type = "BOX";
+    addCollisionObjects(std_object_type, num_object);
 }
 
 void MoveitWrapper::openGripper(trajectory_msgs::JointTrajectory& posture)
@@ -125,7 +137,7 @@ void MoveitWrapper::pick()
   // Set support surface as table1.
   group_->setSupportSurfaceName("table1");
   // Call pick to pick up the object using the grasps given
-  group_->pick("object", grasps);
+  group_->pick(object_id_, grasps);
   // END_SUB_TUTORIAL
   ros::WallDuration(1.0).sleep();
 }
@@ -178,12 +190,12 @@ void MoveitWrapper::place()
   // Set support surface as table2.
   group_->setSupportSurfaceName("table2");
   // Call place to place the object using the place locations given.
-  group_->place("object", place_location);
+  group_->place(object_id_, place_location);
   // END_SUB_TUTORIAL
   ros::WallDuration(1.0).sleep();
 }
 
-void MoveitWrapper::addCollisionObjects(uint8_t &num_object)
+void MoveitWrapper::addCollisionObjects(std::string object_type, int num_object, std::string object_id)
 {
     // BEGIN_SUB_TUTORIAL table1
   //
@@ -191,8 +203,24 @@ void MoveitWrapper::addCollisionObjects(uint8_t &num_object)
   // ^^^^^^^^^^^^^^^^^^^^
   // Create vector to hold 3 collision objects.
   std::vector<moveit_msgs::CollisionObject> collision_objects;
-  collision_objects.resize(num_object);
-
+  collision_objects.resize(num_object + 2);
+  
+  //object type
+  if(object_type == "BOX")
+  {
+    object_type_ = BOX;
+  }
+  else if(object_type == "SPHERE")
+  {
+    object_type_ = SPHERE;
+  }
+  else if(object_type == "CYLINDER")
+  {
+    object_type_ = CYLINDER;
+  }
+  
+  ROS_INFO("Object type : %s", object_type.c_str());
+  ROS_INFO("Object type : %d", object_type_);
   // Add the first table where the cube will originally be kept.
   collision_objects[0].id = "table1";
   collision_objects[0].header.frame_id = "panda_link0";
@@ -238,29 +266,68 @@ void MoveitWrapper::addCollisionObjects(uint8_t &num_object)
 
   collision_objects[1].operation = collision_objects[1].ADD;
 
-  // BEGIN_SUB_TUTORIAL object
-  // Define the object that we will be manipulating
-  collision_objects[2].header.frame_id = "panda_link0";
-  collision_objects[2].id = "object";
+  
+  for (uint8_t i=2; i<(num_object+2); i++)
+  {
+    // Define the object that we will be manipulating
+      object_id_ =  object_id; //"object"+ std::to_string(i+2);
+      collision_objects[i].header.frame_id = "panda_link0";
+      collision_objects[i].id = object_id_;
+      /* Define the primitive and its dimensions. */
+      collision_objects[i].primitives.resize(1);
+      collision_objects[i].primitives[0].type = object_type_; //collision_objects[1].primitives[0].BOX;
+      
+      switch (object_type_)
+      {
+      case BOX:
+        collision_objects[i].primitives[0].dimensions.resize(3);
+        collision_objects[i].primitives[0].dimensions[0] = 0.02;
+        collision_objects[i].primitives[0].dimensions[1] = 0.02;
+        collision_objects[i].primitives[0].dimensions[2] = 0.2;
 
-  /* Define the primitive and its dimensions. */
-  collision_objects[2].primitives.resize(1);
-  collision_objects[2].primitives[0].type = collision_objects[1].primitives[0].BOX;
-  collision_objects[2].primitives[0].dimensions.resize(3);
-  collision_objects[2].primitives[0].dimensions[0] = 0.02;
-  collision_objects[2].primitives[0].dimensions[1] = 0.02;
-  collision_objects[2].primitives[0].dimensions[2] = 0.2;
+      /* Define the pose of the object. */
+        collision_objects[i].primitive_poses.resize(1);
+        collision_objects[i].primitive_poses[0].position.x = 0.5;
+        collision_objects[i].primitive_poses[0].position.y = 0;
+        collision_objects[i].primitive_poses[0].position.z = 0.5;
+        collision_objects[i].primitive_poses[0].orientation.w = 1.0;
+        break;
+      case SPHERE:
+        collision_objects[i].primitives[0].dimensions.resize(1);
+        collision_objects[i].primitives[0].dimensions[0] = 0.02;
 
-  /* Define the pose of the object. */
-  collision_objects[2].primitive_poses.resize(1);
-  collision_objects[2].primitive_poses[0].position.x = 0.5;
-  collision_objects[2].primitive_poses[0].position.y = 0;
-  collision_objects[2].primitive_poses[0].position.z = 0.5;
-  collision_objects[2].primitive_poses[0].orientation.w = 1.0;
-  // END_SUB_TUTORIAL
+      /* Define the pose of the object. */
+        collision_objects[i].primitive_poses.resize(1);
+        collision_objects[i].primitive_poses[0].position.x = 0.5;
+        collision_objects[i].primitive_poses[0].position.y = 0;
+        collision_objects[i].primitive_poses[0].position.z = 0.5;
+        collision_objects[i].primitive_poses[0].orientation.w = 1.0;
+        break;
+      case CYLINDER:
+        collision_objects[i].primitives[0].dimensions.resize(2);
+        collision_objects[i].primitives[0].dimensions[0] = 0.2;
+        collision_objects[i].primitives[0].dimensions[1] = 0.02;
+    
+      /* Define the pose of the object. */
+        collision_objects[i].primitive_poses.resize(1);
+        collision_objects[i].primitive_poses[0].position.x = 0.5;
+        collision_objects[i].primitive_poses[0].position.y = 0;
+        collision_objects[i].primitive_poses[0].position.z = 0.5;
+        collision_objects[i].primitive_poses[0].orientation.w = 1.0;
+        break;
+      
+      default:
+        break;
+      }
+      
+      //END_SUB_TUTORIAL
+     collision_objects[i].operation = collision_objects[i].ADD;
 
-  collision_objects[2].operation = collision_objects[2].ADD;
-
+  }
+ 
+  
+  
+  
   planning_scene_interface_->applyCollisionObjects(collision_objects);
   ros::WallDuration(1.0).sleep();
 }
