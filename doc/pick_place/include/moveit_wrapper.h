@@ -54,24 +54,25 @@ public:
     MoveitWrapper(moveit::planning_interface::PlanningSceneInterface* planning_scene_interface,
   moveit::planning_interface::MoveGroupInterface* group);
     ~MoveitWrapper(void);
-    void open_gripper();
-    void closed_gripper();
-    void pick_object();
-    void place_object();
-    void add_object(int num_object);
-    void add_object(std::string object_type, int num_object=1,std::string object="object");
-    //void add_object(std::string object_type);
+    float gripper_posture_open_[2];
+    float gripper_posture_close_[2];
+    void pick_object( std::string object_id, std::string table_id="table1");
+    void pick_object( std::string object_id, std::string table_id, float grasp_pose[]);
+    void place_object( std::string object_id, std::string table_id="table2");
+    void place_object(std::string object_id, std::string table_id, float place_pose[]);
+    void add_object(std::string object_type, std::string object_id, float position[], float object_dim[]);
+    void setup();
+    void setup_object();
 
 private:
     
     void openGripper(trajectory_msgs::JointTrajectory& posture);
     void closedGripper(trajectory_msgs::JointTrajectory& posture);
-    void pick();
-    void place();
-    void addCollisionObjects(std::string object_type, int num_object=1, std::string object_id = "object");
+    void pick(float grasp_pose[], std::string object_id, std::string table_id);
+    void place(float place_pose[], std::string object_id, std::string table_id);
+    void addCollisionObject(std::string object_type, std::string object_id, float position[], float object_dim[]);
     
     moveit::planning_interface::PlanningSceneInterface* planning_scene_interface_;
     moveit::planning_interface::MoveGroupInterface* group_;
     Type_object object_type_ ;
-    std::string object_id_;
 };

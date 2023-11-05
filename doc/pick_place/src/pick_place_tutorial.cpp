@@ -17,17 +17,18 @@ int main(int argc, char** argv)
     moveit::planning_interface::MoveGroupInterface group("panda_arm");
     group.setPlanningTime(45.0);
     MoveitWrapper moveit_wrapper(&planning_scene_interface, &group);
-    
+    moveit_wrapper.setup();
+    moveit_wrapper.setup_object();
   /*******************************************************************************************/
     
   /********************************INSERT YOUR CODE HERE *************************************/
-    int num_object = 1;
-    std::string typ_object = "SPHERE";
-    std::string object_id = "object";
-    moveit_wrapper.add_object(typ_object, num_object,object_id);
-    moveit_wrapper.pick_object();
-    moveit_wrapper.place_object();
-
+    // int num_object = 1;
+    // std::string typ_object = "SPHERE";
+    // std::string object_id = "object";
+    // moveit_wrapper.add_object(typ_object, num_object,object_id);
+    // moveit_wrapper.pick_object();
+    // moveit_wrapper.place_object();
+ 
   /*******************************************************************************************/
   // ARRAY TO GIVE THE ACTUAL POSE AND PLACE POSE , TRY TO GIVE DEFAULT VALUE
   
