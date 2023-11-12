@@ -45,6 +45,7 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <string>
+#include <ctime>
 // The circle constant tau = 2*pi. One tau is one rotation in radians.
 const double tau = 2 * M_PI;
 enum Type_object {BOX = 1, SPHERE = 2, CYLINDER = 3 , CONE = 4};
@@ -60,9 +61,10 @@ public:
     void pick_object( std::string object_id, std::string table_id, float grasp_pose[]);
     void place_object( std::string object_id, std::string table_id="table2");
     void place_object(std::string object_id, std::string table_id, float place_pose[]);
-    void add_object(std::string object_type, std::string object_id, float position[], float object_dim[]);
+    void add_object(std::string object_type, std::string object_id, float position[]);
     void setup();
     void setup_object();
+    int random_number_;
 
 private:
     
@@ -70,9 +72,10 @@ private:
     void closedGripper(trajectory_msgs::JointTrajectory& posture);
     void pick(float grasp_pose[], std::string object_id, std::string table_id);
     void place(float place_pose[], std::string object_id, std::string table_id);
-    void addCollisionObject(std::string object_type, std::string object_id, float position[], float object_dim[]);
+    void addCollisionObject(std::string object_type, std::string object_id, float position[]);
     
     moveit::planning_interface::PlanningSceneInterface* planning_scene_interface_;
     moveit::planning_interface::MoveGroupInterface* group_;
     Type_object object_type_ ;
+    
 };
