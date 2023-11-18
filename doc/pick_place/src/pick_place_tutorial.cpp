@@ -18,7 +18,8 @@ int main(int argc, char** argv)
     group.setPlanningTime(45.0);
     MoveitWrapper moveit_wrapper(&planning_scene_interface, &group);
     moveit_wrapper.setup();
-    //moveit_wrapper.setup_object();
+    moveit_wrapper.setup_object();
+    int random_number = moveit_wrapper.random_number_;
   /*******************************************************************************************/
     
   /********************************INSERT YOUR CODE HERE *************************************/
